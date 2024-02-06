@@ -2,6 +2,7 @@ import re
 from urllib.parse import urlparse
 
 def scraper(url, resp):
+    # Retrieves the next links to visit, removing those that are invalid
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
@@ -15,8 +16,17 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+    next_links = []
+
+    # checking if the status is ok
+    # if not 200, print the error and return
+    if resp.status != 200:
+        print("The error is: ", resp.error)
+        return []
+
     
-    return list()
+    
+    return next_links
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
