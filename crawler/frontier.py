@@ -7,6 +7,7 @@ from queue import Queue, Empty
 from utils import get_logger, get_urlhash, normalize
 from scraper import is_valid
 
+
 class Frontier(object):
     def __init__(self, config, restart):
         self.logger = get_logger("FRONTIER")
@@ -14,6 +15,10 @@ class Frontier(object):
         self.to_be_downloaded = list()
         
         if not os.path.exists(self.config.save_file) and not restart:
+            
+            #print("testing")
+            #
+
             # Save file does not exist, but request to load save.
             self.logger.info(
                 f"Did not find save file {self.config.save_file}, "
@@ -39,7 +44,12 @@ class Frontier(object):
         ''' This function can be overridden for alternate saving techniques. '''
         total_count = len(self.save)
         tbd_count = 0
+
+        print("self.save : ", len(self.save.values()))
+
         for url, completed in self.save.values():
+            print("url: ", url, " , ", completed, " , ", is_valid(url))
+
             if not completed and is_valid(url):
                 self.to_be_downloaded.append(url)
                 tbd_count += 1

@@ -1,8 +1,12 @@
 import re
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+
 
 def scraper(url, resp):
     # Retrieves the next links to visit, removing those that are invalid
+    print("scraper function ", url, " : ", resp)
+
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
@@ -20,11 +24,18 @@ def extract_next_links(url, resp):
 
     # checking if the status is ok
     # if not 200, print the error and return
+    
     if resp.status != 200:
         print("The error is: ", resp.error)
         return []
-
     
+    try:
+        soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+        for link in soup.find_all('a'):
+            next_links.append(link.get('href'))
+
+    except Exception as e:
+        print(f'Error extracting the following link: {e}')
     
     return next_links
 
@@ -48,4 +59,5 @@ def is_valid(url):
 
     except TypeError:
         print ("TypeError for ", parsed)
+       
         raise
