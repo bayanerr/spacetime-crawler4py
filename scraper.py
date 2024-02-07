@@ -86,7 +86,6 @@ def is_valid(url, urlsVisited):
             
         if full_url not in urlsVisited:
             urlsVisited.add(full_url)
-            
             print("TRUE: ")
             print(full_url)
             return True
@@ -95,7 +94,6 @@ def is_valid(url, urlsVisited):
 
     except TypeError:
         return False
-
         word_list = [
         'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and',
         'any', 'are', "aren't", 'as', 'at', 'be', 'because', 'been', 'before', 'being',
