@@ -58,7 +58,7 @@ def is_valid(url, urlsVisited):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
-    parsed = urlpparse(url)
+    parsed = urlparse(url)
     full_url = parsed.netloc + parsed.path
     try:
         parsed = urlparse(url)
@@ -86,16 +86,16 @@ def is_valid(url, urlsVisited):
             
         if full_url not in urlsVisited:
             urlsVisited.add(full_url)
-            print
-            print("TRUE: " + str(full_url))
+            
+            print("TRUE: ")
+            print(full_url)
             return True
         
     
 
     except TypeError:
-        #print ("TypeError for ", parsed)
-        #raise
         return False
+
         word_list = [
         'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and',
         'any', 'are', "aren't", 'as', 'at', 'be', 'because', 'been', 'before', 'being',
