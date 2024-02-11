@@ -36,7 +36,7 @@ def tokenize(wordList):
     #read the file
     for word in wordList:
         #get alphanumeric only and lower case 
-        alphanumericOnly = re.match("[^a-zA-Z0-9]")
+        alphanumericOnly = re.compile("[^a-zA-Z0-9]")
         alphanumericString = alphanumericOnly.sub(' ', word)
         lowerCaseStrings = alphanumericString.split()   
 
@@ -86,6 +86,9 @@ def tag_visible(element):
 def scraper(url, resp):
     # Retrieves the next links to visit, removing those that are invalid
     #print("scraper function ", url, " : ", resp)
+    global longestFileLength
+    global longestFile
+
     links = extract_next_links(url, resp)
     #return [link for link in links if is_valid(link)]
 
@@ -109,6 +112,8 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+    global longestFileLength
+    global longestFile
     next_links = []
 
     # checking if the status is ok
