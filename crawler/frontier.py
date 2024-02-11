@@ -46,7 +46,6 @@ class Frontier(object):
         tbd_count = 0
 
         print("self.save : ", len(self.save.values()))
-
         for url, completed in self.save.values():
             print("url: ", url, " , ", completed, " , ", is_valid(url))
 

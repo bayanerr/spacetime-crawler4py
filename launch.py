@@ -5,6 +5,8 @@ from utils.server_registration import get_cache_server
 from utils.config import Config
 from crawler import Crawler
 
+import scraper
+
 
 
 def main(config_file, restart):
@@ -14,6 +16,10 @@ def main(config_file, restart):
     config.cache_server = get_cache_server(config, restart)
     crawler = Crawler(config, restart)
     crawler.start()
+
+    print("Top 50: ", scraper.print_frequencies(scraper.tokens))
+    print("Subdomains: ", scraper.subdomains)
+
 
 
 if __name__ == "__main__":
