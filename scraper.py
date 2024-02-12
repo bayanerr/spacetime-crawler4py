@@ -2,6 +2,7 @@ import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from bs4.element import Comment
+import sys
 
 urlsVisited = {"www.ics.uci.edu", "www.cs.uci.edu", "www.informatics.uci.edu", "www.stat.uci.edu"}
 counter = 0
@@ -9,10 +10,25 @@ longestFileLength = 0
 longestFile = ""
 tokens = {}
 
+def init_globals():
+    global urlsVisited
+    global counter
+    global longestFileLength
+    global longestFile
+    global tokens
+
+    urlsVisited = {"www.ics.uci.edu", "www.cs.uci.edu", "www.informatics.uci.edu", "www.stat.uci.edu"}
+    counter = 0
+    longestFileLength = 0
+    longestFile = ""
+    tokens = {}
+
+
+
 word_list = [
     'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and',
     'any', 'are', "aren't", 'as', 'at', 'be', 'because', 'been', 'before', 'being',
-    'below', 'between', 'both', 'but', 'by', "can't", 'cannot', 'could', "couldn't",
+    'below', 'between', 'both', 'buft', 'by', "can't", 'cannot', 'could', "couldn't",
     'did', "didn't", 'do', 'does', "doesn't", 'doing', "don't", 'down', 'during',
     'each', 'few', 'for', 'from', 'further', 'had', "hadn't", 'has', "hasn't", 'have',
     "haven't", 'having', 'he', "he'd", "he'll", "he's", 'her', 'here', "here's",
@@ -33,22 +49,25 @@ word_list = [
 subdomains = {}
 
 def tokenize(wordList):
+    uniqueWords = set()
+
     #read the file
     for word in wordList:
         #get alphanumeric only and lower case 
         alphanumericOnly = re.compile("[^a-zA-Z0-9]")
         alphanumericString = alphanumericOnly.sub(' ', word)
-        lowerCaseStrings = alphanumericString.split()   
+        lowerCaseStrings = alphanumericString.split()
 
         #split by blankspace
         for eachString in lowerCaseStrings:
-            if eachString not in word_list:
-                if eachString not in tokens.keys():
-                    tokens[eachString] = 1
+            uniqueWords.add(eachString.lower())
+            if eachString.lower() not in word_list and len(eachString) > 1:
+                if eachString.lower() not in tokens.keys():
+                    tokens[eachString.lower()] = 1
                 else:
-                    tokens[eachString] += 1
-    return tokens
-
+                    tokens[eachString.lower()] += 1
+    return uniqueWords
+ 
 def print_frequencies(frequencies):
     #sort frequencies by value size
     sortedFrequencies = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
@@ -131,19 +150,29 @@ def extract_next_links(url, resp):
         currentFile = soup.findAll(text=True)
         visible_texts = list(filter(tag_visible, currentFile))
 
-        tokenize(visible_texts)
+        uniqueWords = tokenize(visible_texts) 
+
+        if len(uniqueWords) < 20:
+            return []
 
         currentFileLength = len(visible_texts)
 
-        i = 0 
+        if currentFileLength <= 100:
+            return []
+
         for link in soup.find_all('a'):
             next_links.append(link.get('href'))
     
 
         if currentFileLength > longestFileLength:
             longestFileLength = currentFileLength
-
             longestFile = url
+
+        #if len(urlsVisited) >= 100:
+        #    print_frequencies(tokens)
+        #    print("Subdomains: ", subdomains)
+        #    sys.exit()
+        
     
     except Exception as e:
         print(f'Error extracting the following link: {e}\n')
@@ -163,24 +192,26 @@ def is_valid(url, urlsVisited):
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|ps|eps|tex|ppt|pptx|ppsx|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
 
+        # add ppsx?
+
         if parsed.scheme not in set(["http", "https"]):
             return False
 
         # https://www.ics.uci.edu, https://www.cs.uci.edu,https://www.informatics.uci.edu,https://www.stat.uci.edu
-        if parsed.netloc not in set(["www.ics.uci.edu", 
-            "www.cs.uci.edu", "www.informatics.uci.edu", "www.stat.uci.edu"]):
-            return False
+        #if parsed.netloc not in set(["www.ics.uci.edu", 
+        #    "www.cs.uci.edu", "www.informatics.uci.edu", "www.stat.uci.edu"]):
+        #    return False
         
         
         
-        if re.match(".*.ics.uci.edu/.*", parsed.netloc) or re.match(".*.cs.uci.edu/.*", parsed.netloc) or re.match(".*.informatics.uci.edu/.*", parsed.netloc) or re.match(".*.stat.uci.edu/.*", parsed.netloc):
+        if re.match(".*.ics.uci.edu.*", parsed.netloc) or re.match(".*.cs.uci.edu.*", parsed.netloc) or re.match(".*.informatics.uci.edu.*", parsed.netloc) or re.match(".*.stat.uci.edu.*", parsed.netloc):
             pass
         else:
             return False
@@ -190,10 +221,11 @@ def is_valid(url, urlsVisited):
 
 
 
-        if re.match(".*.ics.uci.edu/.*", parsed.netloc):
+        if re.match(".*.ics.uci.edu.*", parsed.netloc):
             counter += 1
 
             if parsed.netloc not in subdomains.keys():
+                
                 subdomains[parsed.netloc] = 1
             else:
                 subdomains[parsed.netloc] += 1
@@ -204,7 +236,6 @@ def is_valid(url, urlsVisited):
             return True
         
     
-
     except TypeError:
         print ("TypeError for ", parsed)
-        raise
+        return False

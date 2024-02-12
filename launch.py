@@ -10,6 +10,8 @@ import scraper
 
 
 def main(config_file, restart):
+    scraper.init_globals()
+
     cparser = ConfigParser()
     cparser.read(config_file)
     config = Config(cparser)
