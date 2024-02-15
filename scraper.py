@@ -9,6 +9,7 @@ counter = 0
 longestFileLength = 0
 longestFile = ""
 tokens = {}
+subdomains = {}
 
 def init_globals():
     global urlsVisited
@@ -16,12 +17,14 @@ def init_globals():
     global longestFileLength
     global longestFile
     global tokens
+    global subdomains
 
     urlsVisited = {"www.ics.uci.edu", "www.cs.uci.edu", "www.informatics.uci.edu", "www.stat.uci.edu"}
     counter = 0
     longestFileLength = 0
     longestFile = ""
     tokens = {}
+    subdomains = {}
 
 
 
@@ -45,8 +48,6 @@ word_list = [
     'which', 'while', 'who', "who's", 'whom', 'why', "why's", 'with', "won't", 'would',
     "wouldn't", 'you', "you'd", "you'll", "you're", "you've", 'your', 'yours',
     'yourself', 'yourselves']
-
-subdomains = {}
 
 def tokenize(wordList):
     uniqueWords = set()
