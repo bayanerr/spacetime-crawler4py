@@ -21,7 +21,6 @@ def main(config_file, restart):
 
     print("Top 50: ", scraper.print_frequencies(scraper.tokens))
     print("Subdomains: ", scraper.subdomains)
-    print("Number of HTTP URLS: ", scraper.counter)
 
 
 

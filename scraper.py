@@ -168,6 +168,11 @@ def extract_next_links(url, resp):
         if currentFileLength > longestFileLength:
             longestFileLength = currentFileLength
             longestFile = url
+
+        #if len(urlsVisited) >= 100:
+        #    print_frequencies(tokens)
+        #    print("Subdomains: ", subdomains)
+        #    sys.exit()
         
     
     except Exception as e:
@@ -195,11 +200,17 @@ def is_valid(url, urlsVisited):
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
 
+        # add ppsx?
+
         if parsed.scheme not in set(["http", "https"]):
             return False
+
+        # https://www.ics.uci.edu, https://www.cs.uci.edu,https://www.informatics.uci.edu,https://www.stat.uci.edu
+        #if parsed.netloc not in set(["www.ics.uci.edu", 
+        #    "www.cs.uci.edu", "www.informatics.uci.edu", "www.stat.uci.edu"]):
+        #    return False
         
-
-
+        
         
         if re.match(".*.ics.uci.edu.*", parsed.netloc) or re.match(".*.cs.uci.edu.*", parsed.netloc) or re.match(".*.informatics.uci.edu.*", parsed.netloc) or re.match(".*.stat.uci.edu.*", parsed.netloc):
             pass
@@ -212,15 +223,13 @@ def is_valid(url, urlsVisited):
 
 
         if re.match(".*.ics.uci.edu.*", parsed.netloc):
+            counter += 1
 
             if parsed.netloc not in subdomains.keys():
                 
                 subdomains[parsed.netloc] = 1
             else:
                 subdomains[parsed.netloc] += 1
-
-        if parsed.scheme in set(["http"]):
-            counter += 1
             
         if full_url not in urlsVisited:
             urlsVisited.add(full_url)
