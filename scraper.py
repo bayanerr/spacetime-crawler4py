@@ -180,10 +180,9 @@ def is_valid(url, urlsVisited):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     global counter
-    parsed = urlparse(url)
-    full_url = parsed.netloc + parsed.path
     try:
         parsed = urlparse(url)
+        full_url = parsed.netloc + parsed.path
         if re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -197,8 +196,6 @@ def is_valid(url, urlsVisited):
 
         if parsed.scheme not in set(["http", "https"]):
             return False
-        
-
 
         
         if re.match(".*.ics.uci.edu.*", parsed.netloc) or re.match(".*.cs.uci.edu.*", parsed.netloc) or re.match(".*.informatics.uci.edu.*", parsed.netloc) or re.match(".*.stat.uci.edu.*", parsed.netloc):
@@ -210,14 +207,19 @@ def is_valid(url, urlsVisited):
             return False
 
 
-
         if re.match(".*.ics.uci.edu.*", parsed.netloc):
 
-            if parsed.netloc not in subdomains.keys():
+            # http or https :// x.ics.uci.edu
+
+            # parsed.scheme + "://" + parsed.netloc
+
+            subdomain = parsed.scheme + "://" + parsed.netloc
+
+            if subdomain not in subdomains.keys():
                 
-                subdomains[parsed.netloc] = 1
+                subdomains[subdomain] = 1
             else:
-                subdomains[parsed.netloc] += 1
+                subdomains[subdomain] += 1
 
         if parsed.scheme in set(["http"]):
             counter += 1
@@ -228,6 +230,6 @@ def is_valid(url, urlsVisited):
             return True
         
     
-    except TypeError:
-        print ("TypeError for ", parsed)
+    except:
+        print ("Error for ", parsed)
         return False
